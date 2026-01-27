@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, RefreshControl, TouchableOpacity, Modal, TextInput } from 'react-native';
-import { MapPin, Plus, Edit2, Trash2, X, Users } from 'lucide-react-native';
+import { MapPin, Plus, Edit2, Trash2, X, Users, Search } from 'lucide-react-native';
 import { supabase } from '@/lib/supabase';
 import { Toast } from '@/components/Toast';
 import { ConfirmDialog } from '@/components/ConfirmDialog';
@@ -25,6 +25,7 @@ interface Rider {
 export default function AdminZones() {
   const [zones, setZones] = useState<Zone[]>([]);
   const [riders, setRiders] = useState<Rider[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
   const [refreshing, setRefreshing] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [riderAssignModalVisible, setRiderAssignModalVisible] = useState(false);
@@ -238,6 +239,16 @@ export default function AdminZones() {
     return riders.filter(r => r.zone_id === zoneId).length;
   };
 
+  const filteredZones = zones.filter(zone => {
+    if (!searchQuery.trim()) return true;
+
+    const query = searchQuery.toLowerCase();
+    const nameMatch = zone.name.toLowerCase().includes(query);
+    const descriptionMatch = zone.description?.toLowerCase().includes(query) || false;
+
+    return nameMatch || descriptionMatch;
+  });
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -248,19 +259,41 @@ export default function AdminZones() {
         </TouchableOpacity>
       </View>
 
+      <View style={styles.searchContainer}>
+        <Search size={20} color="#9ca3af" style={styles.searchIcon} />
+        <TextInput
+          style={styles.searchInput}
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          placeholder="Search zones by name or description..."
+          placeholderTextColor="#9ca3af"
+        />
+        {searchQuery.length > 0 && (
+          <TouchableOpacity onPress={() => setSearchQuery('')} style={styles.clearButton}>
+            <X size={18} color="#6b7280" />
+          </TouchableOpacity>
+        )}
+      </View>
+
       <ScrollView
         style={styles.content}
         showsVerticalScrollIndicator={false}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); loadZones(); loadRiders(); }} />}>
 
-        {zones.length === 0 ? (
+        {filteredZones.length === 0 && zones.length === 0 ? (
           <View style={styles.emptyState}>
             <MapPin size={64} color="#d1d5db" />
             <Text style={styles.emptyText}>No zones created yet</Text>
             <Text style={styles.emptySubtext}>Create zones to organize riders by delivery areas</Text>
           </View>
+        ) : filteredZones.length === 0 ? (
+          <View style={styles.emptyState}>
+            <Search size={64} color="#d1d5db" />
+            <Text style={styles.emptyText}>No zones found</Text>
+            <Text style={styles.emptySubtext}>Try adjusting your search query</Text>
+          </View>
         ) : (
-          zones.map((zone) => (
+          filteredZones.map((zone) => (
             <View key={zone.id} style={styles.zoneCard}>
               <View style={styles.zoneHeader}>
                 <View style={styles.zoneInfo}>
@@ -487,6 +520,30 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontSize: 14,
     fontWeight: '700',
+  },
+  searchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#ffffff',
+    marginHorizontal: 24,
+    marginTop: 16,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+  },
+  searchIcon: {
+    marginRight: 8,
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: 16,
+    color: '#111827',
+  },
+  clearButton: {
+    padding: 4,
+    marginLeft: 8,
   },
   content: {
     flex: 1,
