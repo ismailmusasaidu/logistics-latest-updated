@@ -1,5 +1,5 @@
-import { View, Text, StyleSheet, Modal, TouchableOpacity, ScrollView, Platform } from 'react-native';
-import { X, Download, Printer } from 'lucide-react-native';
+import { View, Text, StyleSheet, Modal, TouchableOpacity, ScrollView, Platform, Share } from 'react-native';
+import { X, Download, Printer, Share2 } from 'lucide-react-native';
 import { Fonts } from '@/constants/fonts';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
@@ -67,6 +67,66 @@ export function OrderReceiptModal({ visible, onClose, orderId }: ReceiptProps) {
   const handleDownload = () => {
     if (Platform.OS === 'web' && order) {
       generatePDF();
+    }
+  };
+
+  const handleShare = async () => {
+    if (!order) return;
+
+    const receiptText = `
+DANHAUSA LOGISTICS
+Receipt
+
+Order Number: ${order.order_number}
+Date: ${formatDate(order.created_at)}
+Status: ${order.status.toUpperCase()}
+
+═══════════════════════════
+
+DELIVERY DETAILS
+
+FROM:
+${order.pickup_address}
+${order.pickup_instructions ? `Note: ${order.pickup_instructions}` : ''}
+
+TO:
+${order.delivery_address}
+${order.delivery_instructions ? `Note: ${order.delivery_instructions}` : ''}
+
+Recipient: ${order.recipient_name}
+Phone: ${order.recipient_phone}
+${order.scheduled_delivery_time ? `Scheduled: ${formatDate(order.scheduled_delivery_time)}` : ''}
+
+═══════════════════════════
+
+PACKAGE INFO
+
+Description: ${order.package_description}
+${order.order_size ? `Size: ${order.order_size.toUpperCase()}` : ''}
+${order.order_types && order.order_types.length > 0 ? `Type: ${order.order_types.join(', ').toUpperCase()}` : ''}
+
+═══════════════════════════
+
+DELIVERY FEE: ${formatCurrency(order.delivery_fee)}
+
+Payment Method: ${order.payment_method.toUpperCase()}
+Payment Status: ${order.payment_status.toUpperCase()}
+
+═══════════════════════════
+
+Thank you for using Danhausa Logistics!
+Track your order anytime in the app
+
+Order ID: ${order.id}
+    `.trim();
+
+    try {
+      await Share.share({
+        message: receiptText,
+        title: `Receipt - ${order.order_number}`,
+      });
+    } catch (error) {
+      console.error('Error sharing receipt:', error);
     }
   };
 
@@ -692,10 +752,15 @@ export function OrderReceiptModal({ visible, onClose, orderId }: ReceiptProps) {
           )}
 
           {Platform.OS !== 'web' && !loading && (
-            <View style={styles.mobileFooter}>
-              <Text style={styles.mobileFooterText}>
-                Screenshot this receipt for your records
-              </Text>
+            <View style={styles.actions}>
+              <TouchableOpacity
+                style={[styles.actionButton, styles.shareButton]}
+                onPress={handleShare}
+                disabled={loading}
+              >
+                <Share2 size={20} color="#ffffff" />
+                <Text style={styles.actionButtonText}>Share Receipt</Text>
+              </TouchableOpacity>
             </View>
           )}
         </View>
@@ -920,23 +985,13 @@ const styles = StyleSheet.create({
   downloadButton: {
     backgroundColor: '#f97316',
   },
+  shareButton: {
+    backgroundColor: '#10b981',
+  },
   actionButtonText: {
     fontSize: 15,
     fontWeight: '600',
     fontFamily: Fonts.semiBold,
     color: '#ffffff',
-  },
-  mobileFooter: {
-    padding: 20,
-    backgroundColor: '#f9fafb',
-    borderTopWidth: 1,
-    borderTopColor: '#e5e7eb',
-    alignItems: 'center',
-  },
-  mobileFooterText: {
-    fontSize: 14,
-    fontFamily: Fonts.medium,
-    color: '#6b7280',
-    textAlign: 'center',
   },
 });
