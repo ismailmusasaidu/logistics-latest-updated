@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, RefreshControl, TouchableOpacity, Modal, TextInput } from 'react-native';
-import { Package, Truck, Filter, X, Phone, MapPin, User, Clock, Edit2 } from 'lucide-react-native';
+import { Package, Truck, Filter, X, Phone, MapPin, User, Clock, Edit2, Search } from 'lucide-react-native';
 import { supabase } from '@/lib/supabase';
 import { Toast } from '@/components/Toast';
 
@@ -25,6 +25,7 @@ interface ServiceRequest {
 export default function AdminServiceRequests() {
   const [requests, setRequests] = useState<ServiceRequest[]>([]);
   const [filteredRequests, setFilteredRequests] = useState<ServiceRequest[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
   const [refreshing, setRefreshing] = useState(false);
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [serviceTypeFilter, setServiceTypeFilter] = useState<string>('all');
@@ -61,8 +62,18 @@ export default function AdminServiceRequests() {
       filtered = filtered.filter(r => r.service_type === serviceTypeFilter);
     }
 
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(r =>
+        r.full_name.toLowerCase().includes(query) ||
+        r.phone.toLowerCase().includes(query) ||
+        r.pickup_area.toLowerCase().includes(query) ||
+        r.dropoff_area.toLowerCase().includes(query)
+      );
+    }
+
     setFilteredRequests(filtered);
-  }, [requests, statusFilter, serviceTypeFilter]);
+  }, [requests, statusFilter, serviceTypeFilter, searchQuery]);
 
   const loadRequests = async () => {
     try {
@@ -169,6 +180,23 @@ export default function AdminServiceRequests() {
         </View>
       </View>
 
+      <View style={styles.searchContainer}>
+        <Search size={20} color="#9ca3af" style={styles.searchIcon} />
+        <TextInput
+          style={styles.searchInput}
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          placeholder="Search by name, phone, or location..."
+          placeholderTextColor="#9ca3af"
+          underlineColorAndroid="transparent"
+        />
+        {searchQuery.length > 0 && (
+          <TouchableOpacity onPress={() => setSearchQuery('')} style={styles.clearButton}>
+            <X size={18} color="#6b7280" />
+          </TouchableOpacity>
+        )}
+      </View>
+
       <View style={styles.filtersContainer}>
         <View style={styles.filterRow}>
           <Filter size={18} color="#6b7280" />
@@ -210,10 +238,16 @@ export default function AdminServiceRequests() {
 
         {filteredRequests.length === 0 ? (
           <View style={styles.emptyState}>
-            <Package size={64} color="#d1d5db" />
+            {searchQuery.trim() ? (
+              <Search size={64} color="#d1d5db" />
+            ) : (
+              <Package size={64} color="#d1d5db" />
+            )}
             <Text style={styles.emptyText}>No service requests found</Text>
             <Text style={styles.emptySubtext}>
-              {statusFilter !== 'all' || serviceTypeFilter !== 'all'
+              {searchQuery.trim()
+                ? 'Try adjusting your search query'
+                : statusFilter !== 'all' || serviceTypeFilter !== 'all'
                 ? 'Try adjusting your filters'
                 : 'Requests will appear here'}
             </Text>
@@ -396,10 +430,36 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '700',
   },
+  searchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#ffffff',
+    marginHorizontal: 24,
+    marginTop: 16,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+  },
+  searchIcon: {
+    marginRight: 8,
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: 16,
+    color: '#111827',
+    outlineStyle: 'none',
+  },
+  clearButton: {
+    padding: 4,
+    marginLeft: 8,
+  },
   filtersContainer: {
     backgroundColor: '#ffffff',
     paddingHorizontal: 24,
     paddingVertical: 12,
+    marginTop: 16,
     gap: 12,
     borderBottomWidth: 1,
     borderBottomColor: '#e5e7eb',
