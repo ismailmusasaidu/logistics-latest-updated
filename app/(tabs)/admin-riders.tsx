@@ -774,24 +774,27 @@ const styles = StyleSheet.create({
   filterContainer: {
     flexDirection: 'row',
     paddingHorizontal: 24,
-    paddingVertical: 16,
+    paddingVertical: 12,
     backgroundColor: '#ffffff',
     gap: 8,
   },
   filterButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 8,
     backgroundColor: '#f3f4f6',
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
   },
   filterButtonActive: {
     backgroundColor: '#3b82f6',
+    borderColor: '#3b82f6',
   },
   filterScrollContainer: {
     backgroundColor: '#ffffff',
   },
   filterText: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: '600',
     color: '#6b7280',
   },
@@ -800,6 +803,7 @@ const styles = StyleSheet.create({
   },
   filterButtonPending: {
     backgroundColor: '#f59e0b',
+    borderColor: '#f59e0b',
   },
   filterTextPending: {
     color: '#ffffff',
