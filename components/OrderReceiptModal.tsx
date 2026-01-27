@@ -669,25 +669,35 @@ export function OrderReceiptModal({ visible, onClose, orderId }: ReceiptProps) {
             ) : null}
           </ScrollView>
 
-          <View style={styles.actions}>
-            <TouchableOpacity
-              style={[styles.actionButton, styles.printButton]}
-              onPress={handlePrint}
-              disabled={loading}
-            >
-              <Printer size={20} color="#ffffff" />
-              <Text style={styles.actionButtonText}>Print</Text>
-            </TouchableOpacity>
+          {Platform.OS === 'web' && (
+            <View style={styles.actions}>
+              <TouchableOpacity
+                style={[styles.actionButton, styles.printButton]}
+                onPress={handlePrint}
+                disabled={loading}
+              >
+                <Printer size={20} color="#ffffff" />
+                <Text style={styles.actionButtonText}>Print</Text>
+              </TouchableOpacity>
 
-            <TouchableOpacity
-              style={[styles.actionButton, styles.downloadButton]}
-              onPress={handleDownload}
-              disabled={loading}
-            >
-              <Download size={20} color="#ffffff" />
-              <Text style={styles.actionButtonText}>Download</Text>
-            </TouchableOpacity>
-          </View>
+              <TouchableOpacity
+                style={[styles.actionButton, styles.downloadButton]}
+                onPress={handleDownload}
+                disabled={loading}
+              >
+                <Download size={20} color="#ffffff" />
+                <Text style={styles.actionButtonText}>Download</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+
+          {Platform.OS !== 'web' && !loading && (
+            <View style={styles.mobileFooter}>
+              <Text style={styles.mobileFooterText}>
+                Screenshot this receipt for your records
+              </Text>
+            </View>
+          )}
         </View>
       </View>
     </Modal>
@@ -698,16 +708,18 @@ const styles = StyleSheet.create({
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
+    justifyContent: Platform.OS === 'web' ? 'center' : 'flex-end',
     alignItems: 'center',
   },
   modalContent: {
     backgroundColor: '#ffffff',
-    borderRadius: 16,
-    width: '90%',
-    maxWidth: 500,
-    maxHeight: '90%',
+    borderRadius: Platform.OS === 'web' ? 16 : 24,
+    width: Platform.OS === 'web' ? '90%' : '100%',
+    maxWidth: Platform.OS === 'web' ? 500 : undefined,
+    height: Platform.OS === 'web' ? undefined : '100%',
+    maxHeight: Platform.OS === 'web' ? '90%' : '100%',
     overflow: 'hidden',
+    marginTop: Platform.OS === 'web' ? 0 : 40,
   },
   header: {
     flexDirection: 'row',
@@ -730,7 +742,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    padding: 20,
+    padding: Platform.OS === 'web' ? 20 : 16,
+    paddingBottom: Platform.OS === 'web' ? 20 : 40,
   },
   loadingContainer: {
     padding: 40,
@@ -747,12 +760,12 @@ const styles = StyleSheet.create({
   },
   receipt: {
     width: '100%',
-    maxWidth: 320,
+    maxWidth: Platform.OS === 'web' ? 320 : undefined,
     backgroundColor: '#ffffff',
-    padding: 20,
-    borderWidth: 1,
+    padding: Platform.OS === 'web' ? 20 : 16,
+    borderWidth: Platform.OS === 'web' ? 1 : 0,
     borderColor: '#e5e7eb',
-    borderRadius: 8,
+    borderRadius: Platform.OS === 'web' ? 8 : 0,
   },
   businessName: {
     fontSize: 20,
@@ -912,5 +925,18 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     fontFamily: Fonts.semiBold,
     color: '#ffffff',
+  },
+  mobileFooter: {
+    padding: 20,
+    backgroundColor: '#f9fafb',
+    borderTopWidth: 1,
+    borderTopColor: '#e5e7eb',
+    alignItems: 'center',
+  },
+  mobileFooterText: {
+    fontSize: 14,
+    fontFamily: Fonts.medium,
+    color: '#6b7280',
+    textAlign: 'center',
   },
 });
