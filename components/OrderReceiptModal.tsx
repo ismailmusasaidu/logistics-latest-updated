@@ -143,18 +143,19 @@ Order ID: ${order.id}
     const pageWidth = doc.internal.pageSize.getWidth();
     const margin = 20;
     const maxWidth = pageWidth - (margin * 2);
+    const midPoint = pageWidth / 2;
     let yPos = 20;
 
     doc.setFont('courier', 'bold');
     doc.setFontSize(18);
-    doc.text('DANHAUSA LOGISTICS', pageWidth / 2, yPos, { align: 'center' });
+    doc.text('DANHAUSA LOGISTICS', midPoint, yPos, { align: 'center' });
     yPos += 6;
 
     doc.setFont('courier', 'normal');
     doc.setFontSize(10);
-    doc.text('info@danhausalogistics.com', pageWidth / 2, yPos, { align: 'center' });
+    doc.text('info@danhausalogistics.com', midPoint, yPos, { align: 'center' });
     yPos += 5;
-    doc.text('danhausalogistics.com', pageWidth / 2, yPos, { align: 'center' });
+    doc.text('danhausalogistics.com', midPoint, yPos, { align: 'center' });
     yPos += 10;
 
     doc.setLineWidth(0.5);
@@ -163,7 +164,7 @@ Order ID: ${order.id}
 
     doc.setFont('courier', 'bold');
     doc.setFontSize(14);
-    doc.text('ORDER RECEIPT', pageWidth / 2, yPos, { align: 'center' });
+    doc.text('ORDER RECEIPT', midPoint, yPos, { align: 'center' });
     yPos += 10;
 
     doc.line(margin, yPos, pageWidth - margin, yPos);
@@ -172,20 +173,23 @@ Order ID: ${order.id}
     doc.setFont('courier', 'normal');
     doc.setFontSize(10);
     doc.text('Order Number:', margin, yPos);
+    yPos += 5;
     doc.setFont('courier', 'bold');
-    doc.text(order.order_number, pageWidth - margin, yPos, { align: 'right' });
-    yPos += 6;
+    doc.text(order.order_number, margin + 5, yPos);
+    yPos += 7;
 
     doc.setFont('courier', 'normal');
     doc.text('Date:', margin, yPos);
+    yPos += 5;
     doc.setFont('courier', 'bold');
-    doc.text(formatDate(order.created_at), pageWidth - margin, yPos, { align: 'right' });
-    yPos += 6;
+    doc.text(formatDate(order.created_at), margin + 5, yPos);
+    yPos += 7;
 
     doc.setFont('courier', 'normal');
     doc.text('Status:', margin, yPos);
+    yPos += 5;
     doc.setFont('courier', 'bold');
-    doc.text(order.status.toUpperCase(), pageWidth - margin, yPos, { align: 'right' });
+    doc.text(order.status.toUpperCase(), margin + 5, yPos);
     yPos += 10;
 
     doc.setLineWidth(0.5);
@@ -209,8 +213,9 @@ Order ID: ${order.id}
 
     if (order.pickup_instructions) {
       doc.setFontSize(8);
-      doc.text(`Note: ${order.pickup_instructions}`, margin, yPos);
-      yPos += 6;
+      const pickupNoteLines = doc.splitTextToSize(`Note: ${order.pickup_instructions}`, maxWidth);
+      doc.text(pickupNoteLines, margin, yPos);
+      yPos += (pickupNoteLines.length * 4) + 3;
     }
 
     doc.setFont('courier', 'bold');
@@ -225,27 +230,32 @@ Order ID: ${order.id}
 
     if (order.delivery_instructions) {
       doc.setFontSize(8);
-      doc.text(`Note: ${order.delivery_instructions}`, margin, yPos);
-      yPos += 6;
+      const deliveryNoteLines = doc.splitTextToSize(`Note: ${order.delivery_instructions}`, maxWidth);
+      doc.text(deliveryNoteLines, margin, yPos);
+      yPos += (deliveryNoteLines.length * 4) + 3;
     }
 
     doc.setFontSize(9);
+    doc.setFont('courier', 'normal');
     doc.text('Recipient:', margin, yPos);
-    doc.setFont('courier', 'bold');
-    doc.text(order.recipient_name, pageWidth - margin, yPos, { align: 'right' });
     yPos += 5;
+    doc.setFont('courier', 'bold');
+    doc.text(order.recipient_name, margin + 5, yPos);
+    yPos += 6;
 
     doc.setFont('courier', 'normal');
     doc.text('Phone:', margin, yPos);
+    yPos += 5;
     doc.setFont('courier', 'bold');
-    doc.text(order.recipient_phone, pageWidth - margin, yPos, { align: 'right' });
+    doc.text(order.recipient_phone, margin + 5, yPos);
     yPos += 8;
 
     if (order.scheduled_delivery_time) {
       doc.setFont('courier', 'normal');
       doc.text('Scheduled:', margin, yPos);
+      yPos += 5;
       doc.setFont('courier', 'bold');
-      doc.text(formatDate(order.scheduled_delivery_time), pageWidth - margin, yPos, { align: 'right' });
+      doc.text(formatDate(order.scheduled_delivery_time), margin + 5, yPos);
       yPos += 8;
     }
 
@@ -267,18 +277,23 @@ Order ID: ${order.id}
     yPos += (descLines.length * 5) + 5;
 
     if (order.order_size) {
+      doc.setFont('courier', 'normal');
       doc.text('Size:', margin, yPos);
-      doc.setFont('courier', 'bold');
-      doc.text(order.order_size.toUpperCase(), pageWidth - margin, yPos, { align: 'right' });
       yPos += 5;
+      doc.setFont('courier', 'bold');
+      doc.text(order.order_size.toUpperCase(), margin + 5, yPos);
+      yPos += 6;
     }
 
     if (order.order_types && order.order_types.length > 0) {
       doc.setFont('courier', 'normal');
       doc.text('Type:', margin, yPos);
+      yPos += 5;
       doc.setFont('courier', 'bold');
-      doc.text(order.order_types.join(', ').toUpperCase(), pageWidth - margin, yPos, { align: 'right' });
-      yPos += 8;
+      const typeText = order.order_types.join(', ').toUpperCase();
+      const typeLines = doc.splitTextToSize(typeText, maxWidth - 5);
+      doc.text(typeLines, margin + 5, yPos);
+      yPos += (typeLines.length * 5) + 3;
     }
 
     doc.setLineWidth(0.5);
@@ -286,10 +301,12 @@ Order ID: ${order.id}
     yPos += 10;
 
     doc.setFont('courier', 'bold');
-    doc.setFontSize(14);
-    doc.text('DELIVERY FEE:', margin, yPos);
-    doc.text(formatCurrency(order.delivery_fee), pageWidth - margin, yPos, { align: 'right' });
-    yPos += 10;
+    doc.setFontSize(16);
+    doc.text('DELIVERY FEE', margin, yPos);
+    yPos += 8;
+    doc.setFontSize(18);
+    doc.text(formatCurrency(order.delivery_fee), margin, yPos);
+    yPos += 12;
 
     doc.setLineWidth(0.5);
     doc.line(margin, yPos, pageWidth - margin, yPos);
@@ -298,14 +315,16 @@ Order ID: ${order.id}
     doc.setFont('courier', 'normal');
     doc.setFontSize(9);
     doc.text('Payment Method:', margin, yPos);
-    doc.setFont('courier', 'bold');
-    doc.text(order.payment_method.toUpperCase(), pageWidth - margin, yPos, { align: 'right' });
     yPos += 5;
+    doc.setFont('courier', 'bold');
+    doc.text(order.payment_method.toUpperCase(), margin + 5, yPos);
+    yPos += 6;
 
     doc.setFont('courier', 'normal');
     doc.text('Payment Status:', margin, yPos);
+    yPos += 5;
     doc.setFont('courier', 'bold');
-    doc.text(order.payment_status.toUpperCase(), pageWidth - margin, yPos, { align: 'right' });
+    doc.text(order.payment_status.toUpperCase(), margin + 5, yPos);
     yPos += 10;
 
     doc.setLineWidth(0.5);
@@ -314,9 +333,9 @@ Order ID: ${order.id}
 
     doc.setFont('courier', 'normal');
     doc.setFontSize(9);
-    doc.text('Thank you for using Danhausa Logistics!', pageWidth / 2, yPos, { align: 'center' });
+    doc.text('Thank you for using Danhausa Logistics!', midPoint, yPos, { align: 'center' });
     yPos += 5;
-    doc.text('Track your order anytime in the app', pageWidth / 2, yPos, { align: 'center' });
+    doc.text('Track your order anytime in the app', midPoint, yPos, { align: 'center' });
     yPos += 10;
 
     doc.setLineWidth(0.5);
@@ -324,7 +343,7 @@ Order ID: ${order.id}
     yPos += 6;
 
     doc.setFontSize(8);
-    doc.text(`Order ID: ${order.id}`, pageWidth / 2, yPos, { align: 'center' });
+    doc.text(`Order ID: ${order.id}`, midPoint, yPos, { align: 'center' });
 
     doc.save(`receipt-${order.order_number}.pdf`);
   };
