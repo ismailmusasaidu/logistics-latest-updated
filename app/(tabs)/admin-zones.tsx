@@ -267,6 +267,7 @@ export default function AdminZones() {
           onChangeText={setSearchQuery}
           placeholder="Search zones by name or description..."
           placeholderTextColor="#9ca3af"
+          underlineColorAndroid="transparent"
         />
         {searchQuery.length > 0 && (
           <TouchableOpacity onPress={() => setSearchQuery('')} style={styles.clearButton}>
@@ -540,6 +541,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 16,
     color: '#111827',
+    outlineStyle: 'none',
   },
   clearButton: {
     padding: 4,
