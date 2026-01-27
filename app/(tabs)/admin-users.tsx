@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, RefreshControl, TouchableOpacity, Modal, TextInput, Platform } from 'react-native';
-import { Users, Mail, Phone, Shield, Edit2, Trash2, X, Plus } from 'lucide-react-native';
+import { Users, Mail, Phone, Shield, Edit2, Trash2, X, Plus, Search } from 'lucide-react-native';
 import { supabase, Profile } from '@/lib/supabase';
 import { Toast } from '@/components/Toast';
 import { ConfirmDialog } from '@/components/ConfirmDialog';
 
 export default function AdminUsers() {
   const [users, setUsers] = useState<Profile[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
   const [refreshing, setRefreshing] = useState(false);
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [selectedUser, setSelectedUser] = useState<Profile | null>(null);
@@ -154,13 +155,42 @@ export default function AdminUsers() {
 
   const roleOptions: Array<'customer' | 'rider' | 'admin'> = ['customer', 'rider', 'admin'];
 
+  const filteredUsers = users.filter(user => {
+    if (!searchQuery.trim()) return true;
+
+    const query = searchQuery.toLowerCase();
+    const nameMatch = user.full_name.toLowerCase().includes(query);
+    const emailMatch = user.email.toLowerCase().includes(query);
+    const phoneMatch = user.phone?.toLowerCase().includes(query) || false;
+    const roleMatch = user.role.toLowerCase().includes(query);
+
+    return nameMatch || emailMatch || phoneMatch || roleMatch;
+  });
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Users</Text>
         <View style={styles.badge}>
-          <Text style={styles.badgeText}>{users.length}</Text>
+          <Text style={styles.badgeText}>{filteredUsers.length}</Text>
         </View>
+      </View>
+
+      <View style={styles.searchContainer}>
+        <Search size={20} color="#9ca3af" style={styles.searchIcon} />
+        <TextInput
+          style={styles.searchInput}
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          placeholder="Search by name, email, phone, or role..."
+          placeholderTextColor="#9ca3af"
+          underlineColorAndroid="transparent"
+        />
+        {searchQuery.length > 0 && (
+          <TouchableOpacity onPress={() => setSearchQuery('')} style={styles.clearButton}>
+            <X size={18} color="#6b7280" />
+          </TouchableOpacity>
+        )}
       </View>
 
       <ScrollView
@@ -168,14 +198,20 @@ export default function AdminUsers() {
         showsVerticalScrollIndicator={false}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); loadUsers(); }} />}>
 
-        {users.length === 0 ? (
+        {filteredUsers.length === 0 && users.length === 0 ? (
           <View style={styles.emptyState}>
             <Users size={64} color="#d1d5db" />
             <Text style={styles.emptyText}>No users found</Text>
             <Text style={styles.emptySubtext}>Users will appear here</Text>
           </View>
+        ) : filteredUsers.length === 0 ? (
+          <View style={styles.emptyState}>
+            <Search size={64} color="#d1d5db" />
+            <Text style={styles.emptyText}>No users found</Text>
+            <Text style={styles.emptySubtext}>Try adjusting your search query</Text>
+          </View>
         ) : (
-          users.map((user) => (
+          filteredUsers.map((user) => (
             <View key={user.id} style={styles.userCard}>
               <View style={styles.userHeader}>
                 <View style={[styles.roleBadge, { backgroundColor: getRoleBadgeColor(user.role) }]}>
@@ -340,6 +376,31 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontSize: 14,
     fontWeight: '700',
+  },
+  searchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#ffffff',
+    marginHorizontal: 24,
+    marginTop: 16,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+  },
+  searchIcon: {
+    marginRight: 8,
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: 16,
+    color: '#111827',
+    outlineStyle: 'none',
+  },
+  clearButton: {
+    padding: 4,
+    marginLeft: 8,
   },
   content: {
     flex: 1,
