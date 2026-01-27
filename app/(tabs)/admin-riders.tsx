@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, RefreshControl, TouchableOpacity, Modal, TextInput, Platform } from 'react-native';
-import { Bike, Star, TrendingUp, MapPin, Edit2, Trash2, X, UserPlus, CheckCircle, XCircle, Phone, MapPinIcon, AlertTriangle } from 'lucide-react-native';
+import { Bike, Star, TrendingUp, MapPin, Edit2, Trash2, X, UserPlus, CheckCircle, XCircle, Phone, MapPinIcon, AlertTriangle, Filter } from 'lucide-react-native';
 import { supabase, Rider } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
 import { Toast } from '@/components/Toast';
@@ -268,35 +268,38 @@ export default function AdminRiders() {
         </View>
       </View>
 
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterScrollContainer}>
-        <View style={styles.filterContainer}>
-          <TouchableOpacity
-            style={[styles.filterButton, filter === 'all' && styles.filterButtonActive]}
-            onPress={() => setFilter('all')}>
-            <Text style={[styles.filterText, filter === 'all' && styles.filterTextActive]}>All</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.filterButton, filter === 'pending' && styles.filterButtonPending]}
-            onPress={() => setFilter('pending')}>
-            <Text style={[styles.filterText, filter === 'pending' && styles.filterTextPending]}>Pending</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.filterButton, filter === 'available' && styles.filterButtonActive]}
-            onPress={() => setFilter('available')}>
-            <Text style={[styles.filterText, filter === 'available' && styles.filterTextActive]}>Online</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.filterButton, filter === 'busy' && styles.filterButtonActive]}
-            onPress={() => setFilter('busy')}>
-            <Text style={[styles.filterText, filter === 'busy' && styles.filterTextActive]}>Busy</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.filterButton, filter === 'offline' && styles.filterButtonActive]}
-            onPress={() => setFilter('offline')}>
-            <Text style={[styles.filterText, filter === 'offline' && styles.filterTextActive]}>Offline</Text>
-          </TouchableOpacity>
+      <View style={styles.filtersContainer}>
+        <View style={styles.filterRow}>
+          <Filter size={18} color="#6b7280" />
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.filterScroll}>
+            <TouchableOpacity
+              style={[styles.filterButton, filter === 'all' && styles.filterButtonActive]}
+              onPress={() => setFilter('all')}>
+              <Text style={[styles.filterText, filter === 'all' && styles.filterTextActive]}>All</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.filterButton, filter === 'pending' && styles.filterButtonPending]}
+              onPress={() => setFilter('pending')}>
+              <Text style={[styles.filterText, filter === 'pending' && styles.filterTextPending]}>Pending</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.filterButton, filter === 'available' && styles.filterButtonActive]}
+              onPress={() => setFilter('available')}>
+              <Text style={[styles.filterText, filter === 'available' && styles.filterTextActive]}>Online</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.filterButton, filter === 'busy' && styles.filterButtonActive]}
+              onPress={() => setFilter('busy')}>
+              <Text style={[styles.filterText, filter === 'busy' && styles.filterTextActive]}>Busy</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.filterButton, filter === 'offline' && styles.filterButtonActive]}
+              onPress={() => setFilter('offline')}>
+              <Text style={[styles.filterText, filter === 'offline' && styles.filterTextActive]}>Offline</Text>
+            </TouchableOpacity>
+          </ScrollView>
         </View>
-      </ScrollView>
+      </View>
 
       <ScrollView
         style={styles.content}
@@ -771,39 +774,40 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '700',
   },
-  filterContainer: {
-    flexDirection: 'row',
+  filtersContainer: {
+    backgroundColor: '#ffffff',
     paddingHorizontal: 24,
     paddingVertical: 12,
-    backgroundColor: '#ffffff',
+    borderBottomWidth: 1,
+    borderBottomColor: '#e5e7eb',
+  },
+  filterRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  filterScroll: {
     gap: 8,
   },
   filterButton: {
-    paddingHorizontal: 12,
+    paddingHorizontal: 16,
     paddingVertical: 8,
-    borderRadius: 8,
+    borderRadius: 20,
     backgroundColor: '#f3f4f6',
-    borderWidth: 1,
-    borderColor: '#e5e7eb',
   },
   filterButtonActive: {
     backgroundColor: '#3b82f6',
-    borderColor: '#3b82f6',
   },
-  filterScrollContainer: {
-    backgroundColor: '#ffffff',
+  filterButtonPending: {
+    backgroundColor: '#f59e0b',
   },
   filterText: {
-    fontSize: 12,
+    fontSize: 14,
     fontWeight: '600',
     color: '#6b7280',
   },
   filterTextActive: {
     color: '#ffffff',
-  },
-  filterButtonPending: {
-    backgroundColor: '#f59e0b',
-    borderColor: '#f59e0b',
   },
   filterTextPending: {
     color: '#ffffff',
