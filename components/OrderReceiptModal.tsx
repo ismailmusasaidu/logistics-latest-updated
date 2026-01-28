@@ -356,8 +356,16 @@ Order ID: ${order.id}
         const html = createHTMLReceipt();
         const { uri } = await Print.printToFileAsync({ html });
 
+        // Rename the file to use order number
+        const filename = `${order.order_number}.pdf`;
+        const newUri = `${FileSystem.cacheDirectory}${filename}`;
+        await FileSystem.copyAsync({
+          from: uri,
+          to: newUri,
+        });
+
         if (await Sharing.isAvailableAsync()) {
-          await Sharing.shareAsync(uri, {
+          await Sharing.shareAsync(newUri, {
             mimeType: 'application/pdf',
             dialogTitle: `Receipt - ${order.order_number}`,
             UTI: 'com.adobe.pdf',
