@@ -288,224 +288,6 @@ export function OrderReceiptModal({ visible, onClose, orderId }: ReceiptProps) {
     `;
   };
 
-  const createPDFDocument = async () => {
-    if (!order) return null;
-
-    const jsPDF = (await import('jspdf')).default;
-    const doc = new jsPDF({
-      orientation: 'portrait',
-      unit: 'mm',
-      format: 'a4',
-    });
-
-    const pageWidth = doc.internal.pageSize.getWidth();
-    const margin = 20;
-    const maxWidth = pageWidth - (margin * 2);
-    const midPoint = pageWidth / 2;
-    let yPos = 20;
-
-    doc.setFont('courier', 'bold');
-    doc.setFontSize(18);
-    doc.text('DANHAUSA LOGISTICS', midPoint, yPos, { align: 'center' });
-    yPos += 6;
-
-    doc.setFont('courier', 'normal');
-    doc.setFontSize(10);
-    doc.text('info@danhausalogistics.com', midPoint, yPos, { align: 'center' });
-    yPos += 5;
-    doc.text('danhausalogistics.com', midPoint, yPos, { align: 'center' });
-    yPos += 10;
-
-    doc.setLineWidth(0.5);
-    doc.line(margin, yPos, pageWidth - margin, yPos);
-    yPos += 8;
-
-    doc.setFont('courier', 'bold');
-    doc.setFontSize(14);
-    doc.text('ORDER RECEIPT', midPoint, yPos, { align: 'center' });
-    yPos += 10;
-
-    doc.line(margin, yPos, pageWidth - margin, yPos);
-    yPos += 8;
-
-    doc.setFont('courier', 'normal');
-    doc.setFontSize(10);
-    doc.text('Order Number:', margin, yPos);
-    yPos += 5;
-    doc.setFont('courier', 'bold');
-    doc.text(order.order_number, margin + 5, yPos);
-    yPos += 7;
-
-    doc.setFont('courier', 'normal');
-    doc.text('Date:', margin, yPos);
-    yPos += 5;
-    doc.setFont('courier', 'bold');
-    doc.text(formatDate(order.created_at), margin + 5, yPos);
-    yPos += 7;
-
-    doc.setFont('courier', 'normal');
-    doc.text('Status:', margin, yPos);
-    yPos += 5;
-    doc.setFont('courier', 'bold');
-    doc.text(order.status.toUpperCase(), margin + 5, yPos);
-    yPos += 10;
-
-    doc.setLineWidth(0.5);
-    doc.line(margin, yPos, pageWidth - margin, yPos);
-    yPos += 8;
-
-    doc.setFont('courier', 'bold');
-    doc.setFontSize(11);
-    doc.text('DELIVERY DETAILS', margin, yPos);
-    yPos += 8;
-
-    doc.setFont('courier', 'bold');
-    doc.setFontSize(9);
-    doc.text('FROM:', margin, yPos);
-    yPos += 5;
-    doc.setFont('courier', 'normal');
-    doc.setFontSize(9);
-    const pickupLines = doc.splitTextToSize(order.pickup_address, maxWidth);
-    doc.text(pickupLines, margin, yPos);
-    yPos += (pickupLines.length * 5) + 3;
-
-    if (order.pickup_instructions) {
-      doc.setFontSize(8);
-      const pickupNoteLines = doc.splitTextToSize(`Note: ${order.pickup_instructions}`, maxWidth);
-      doc.text(pickupNoteLines, margin, yPos);
-      yPos += (pickupNoteLines.length * 4) + 3;
-    }
-
-    doc.setFont('courier', 'bold');
-    doc.setFontSize(9);
-    doc.text('TO:', margin, yPos);
-    yPos += 5;
-    doc.setFont('courier', 'normal');
-    doc.setFontSize(9);
-    const deliveryLines = doc.splitTextToSize(order.delivery_address, maxWidth);
-    doc.text(deliveryLines, margin, yPos);
-    yPos += (deliveryLines.length * 5) + 3;
-
-    if (order.delivery_instructions) {
-      doc.setFontSize(8);
-      const deliveryNoteLines = doc.splitTextToSize(`Note: ${order.delivery_instructions}`, maxWidth);
-      doc.text(deliveryNoteLines, margin, yPos);
-      yPos += (deliveryNoteLines.length * 4) + 3;
-    }
-
-    doc.setFontSize(9);
-    doc.setFont('courier', 'normal');
-    doc.text('Recipient:', margin, yPos);
-    yPos += 5;
-    doc.setFont('courier', 'bold');
-    doc.text(order.recipient_name, margin + 5, yPos);
-    yPos += 6;
-
-    doc.setFont('courier', 'normal');
-    doc.text('Phone:', margin, yPos);
-    yPos += 5;
-    doc.setFont('courier', 'bold');
-    doc.text(order.recipient_phone, margin + 5, yPos);
-    yPos += 8;
-
-    if (order.scheduled_delivery_time) {
-      doc.setFont('courier', 'normal');
-      doc.text('Scheduled:', margin, yPos);
-      yPos += 5;
-      doc.setFont('courier', 'bold');
-      doc.text(formatDate(order.scheduled_delivery_time), margin + 5, yPos);
-      yPos += 8;
-    }
-
-    doc.setLineWidth(0.5);
-    doc.line(margin, yPos, pageWidth - margin, yPos);
-    yPos += 8;
-
-    doc.setFont('courier', 'bold');
-    doc.setFontSize(11);
-    doc.text('PACKAGE INFO', margin, yPos);
-    yPos += 8;
-
-    doc.setFont('courier', 'normal');
-    doc.setFontSize(9);
-    doc.text('Description:', margin, yPos);
-    yPos += 5;
-    const descLines = doc.splitTextToSize(order.package_description, maxWidth);
-    doc.text(descLines, margin, yPos);
-    yPos += (descLines.length * 5) + 5;
-
-    if (order.order_size) {
-      doc.setFont('courier', 'normal');
-      doc.text('Size:', margin, yPos);
-      yPos += 5;
-      doc.setFont('courier', 'bold');
-      doc.text(order.order_size.toUpperCase(), margin + 5, yPos);
-      yPos += 6;
-    }
-
-    if (order.order_types && order.order_types.length > 0) {
-      doc.setFont('courier', 'normal');
-      doc.text('Type:', margin, yPos);
-      yPos += 5;
-      doc.setFont('courier', 'bold');
-      const typeText = order.order_types.join(', ').toUpperCase();
-      const typeLines = doc.splitTextToSize(typeText, maxWidth - 5);
-      doc.text(typeLines, margin + 5, yPos);
-      yPos += (typeLines.length * 5) + 3;
-    }
-
-    doc.setLineWidth(0.5);
-    doc.line(margin, yPos, pageWidth - margin, yPos);
-    yPos += 10;
-
-    doc.setFont('courier', 'bold');
-    doc.setFontSize(16);
-    doc.text('DELIVERY FEE', margin, yPos);
-    yPos += 8;
-    doc.setFontSize(18);
-    doc.text(formatCurrency(order.delivery_fee), margin, yPos);
-    yPos += 12;
-
-    doc.setLineWidth(0.5);
-    doc.line(margin, yPos, pageWidth - margin, yPos);
-    yPos += 8;
-
-    doc.setFont('courier', 'normal');
-    doc.setFontSize(9);
-    doc.text('Payment Method:', margin, yPos);
-    yPos += 5;
-    doc.setFont('courier', 'bold');
-    doc.text(order.payment_method.toUpperCase(), margin + 5, yPos);
-    yPos += 6;
-
-    doc.setFont('courier', 'normal');
-    doc.text('Payment Status:', margin, yPos);
-    yPos += 5;
-    doc.setFont('courier', 'bold');
-    doc.text(order.payment_status.toUpperCase(), margin + 5, yPos);
-    yPos += 10;
-
-    doc.setLineWidth(0.5);
-    doc.line(margin, yPos, pageWidth - margin, yPos);
-    yPos += 8;
-
-    doc.setFont('courier', 'normal');
-    doc.setFontSize(9);
-    doc.text('Thank you for using Danhausa Logistics!', midPoint, yPos, { align: 'center' });
-    yPos += 5;
-    doc.text('Track your order anytime in the app', midPoint, yPos, { align: 'center' });
-    yPos += 10;
-
-    doc.setLineWidth(0.5);
-    doc.line(margin, yPos, pageWidth - margin, yPos);
-    yPos += 6;
-
-    doc.setFontSize(8);
-    doc.text(`Order ID: ${order.id}`, midPoint, yPos, { align: 'center' });
-
-    return doc;
-  };
-
   const handleShare = async () => {
     if (!order) return;
 
@@ -579,13 +361,10 @@ Order ID: ${order.id}
     }
   };
 
-  const generatePDF = async () => {
+  const generatePDF = () => {
     if (!order || Platform.OS !== 'web') return;
 
-    const doc = await createPDFDocument();
-    if (!doc) return;
-
-    doc.save(`receipt-${order.order_number}.pdf`);
+    generatePrintableReceipt();
   };
 
   const generatePrintableReceipt = () => {
@@ -1017,7 +796,7 @@ Order ID: ${order.id}
                 disabled={loading}
               >
                 <Download size={20} color="#ffffff" />
-                <Text style={styles.actionButtonText}>Download</Text>
+                <Text style={styles.actionButtonText}>Save as PDF</Text>
               </TouchableOpacity>
             </View>
           )}
