@@ -187,7 +187,7 @@ Deno.serve(async (req: Request) => {
       .select('id, active_orders, zone_id')
       .eq('status', 'online')
       .eq('zone_id', targetZoneId)
-      .lt('active_orders', 3)
+      .lt('active_orders', 10)
       .order('active_orders', { ascending: true })
       .limit(1);
 
