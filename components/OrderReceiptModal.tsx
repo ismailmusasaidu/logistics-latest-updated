@@ -3,8 +3,6 @@ import { X, Download, Printer, Share2 } from 'lucide-react-native';
 import { Fonts } from '@/constants/fonts';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
-import * as FileSystem from 'expo-file-system';
-import { copyAsync } from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
 import * as Print from 'expo-print';
 
@@ -355,22 +353,10 @@ Order ID: ${order.id}
         });
       } else {
         const html = createHTMLReceipt();
-        const filename = `${order.order_number}.pdf`;
         const { uri } = await Print.printToFileAsync({ html });
 
-        const targetDir = FileSystem.cacheDirectory || FileSystem.documentDirectory;
-        if (!targetDir) {
-          throw new Error('No writable directory available');
-        }
-
-        const newUri = `${targetDir}${filename}`;
-        await copyAsync({
-          from: uri,
-          to: newUri,
-        });
-
         if (await Sharing.isAvailableAsync()) {
-          await Sharing.shareAsync(newUri, {
+          await Sharing.shareAsync(uri, {
             mimeType: 'application/pdf',
             dialogTitle: `Receipt - ${order.order_number}`,
             UTI: 'com.adobe.pdf',
