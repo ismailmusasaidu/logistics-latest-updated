@@ -182,6 +182,7 @@ export default function Auth() {
               data: {
                 full_name: fullName,
                 role: 'rider',
+                phone: phoneNumber,
               },
               emailRedirectTo: undefined,
             },
@@ -190,20 +191,15 @@ export default function Auth() {
           if (authError) throw authError;
           if (!authData.user) throw new Error('Failed to create account');
 
-          // Insert or update rider-specific data
-          const { error: riderError } = await supabase.from('riders').upsert({
-            user_id: authData.user.id,
-            phone_number: phoneNumber,
-            address: address,
-            vehicle_type: vehicleType,
-            vehicle_number: vehicleNumber,
-            license_number: licenseNumber,
-            emergency_contact_name: emergencyContactName,
-            emergency_contact_phone: emergencyContactPhone,
-            status: 'offline',
-            approval_status: 'pending',
-          }, {
-            onConflict: 'user_id'
+          // Complete rider signup using secure database function
+          const { data: riderData, error: riderError } = await supabase.rpc('complete_rider_signup', {
+            p_phone_number: phoneNumber || '',
+            p_address: address || '',
+            p_vehicle_type: vehicleType || 'bike',
+            p_vehicle_number: vehicleNumber || '',
+            p_license_number: licenseNumber || '',
+            p_emergency_contact_name: emergencyContactName || '',
+            p_emergency_contact_phone: emergencyContactPhone || '',
           });
 
           if (riderError) throw riderError;
