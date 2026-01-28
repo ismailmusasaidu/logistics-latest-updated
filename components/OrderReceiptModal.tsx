@@ -93,6 +93,12 @@ export function OrderReceiptModal({ visible, onClose, orderId }: ReceiptProps) {
               padding: 24px;
               font-size: 11px;
               line-height: 1.4;
+              display: flex;
+              justify-content: center;
+            }
+            .container {
+              width: 100%;
+              max-width: 360px;
             }
             .header {
               text-align: center;
@@ -188,6 +194,7 @@ export function OrderReceiptModal({ visible, onClose, orderId }: ReceiptProps) {
           </style>
         </head>
         <body>
+          <div class="container">
           <div class="header">
             <div class="company-name">DANHAUSA LOGISTICS</div>
             <div class="company-info">info@danhausalogistics.com</div>
@@ -282,6 +289,7 @@ export function OrderReceiptModal({ visible, onClose, orderId }: ReceiptProps) {
             <div>Thank you for using Danhausa Logistics!</div>
             <div>Track your order anytime in the app</div>
             <div class="order-id">Order ID: ${order.id}</div>
+          </div>
           </div>
         </body>
       </html>
