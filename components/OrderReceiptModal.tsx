@@ -358,7 +358,12 @@ Order ID: ${order.id}
         const filename = `${order.order_number}.pdf`;
         const { uri } = await Print.printToFileAsync({ html });
 
-        const newUri = `${FileSystem.cacheDirectory}${filename}`;
+        const targetDir = FileSystem.cacheDirectory || FileSystem.documentDirectory;
+        if (!targetDir) {
+          throw new Error('No writable directory available');
+        }
+
+        const newUri = `${targetDir}${filename}`;
         await copyAsync({
           from: uri,
           to: newUri,
