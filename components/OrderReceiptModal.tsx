@@ -354,15 +354,13 @@ Order ID: ${order.id}
         });
       } else {
         const html = createHTMLReceipt();
+        const filename = `${order.order_number}.pdf`;
         const { uri } = await Print.printToFileAsync({ html });
 
-        // Rename the file to use order number
-        const filename = `${order.order_number}.pdf`;
         const newUri = `${FileSystem.cacheDirectory}${filename}`;
-        await FileSystem.copyAsync({
-          from: uri,
-          to: newUri,
-        });
+        const sourceFile = new FileSystem.File(uri);
+        const destFile = new FileSystem.File(newUri);
+        await sourceFile.copy(destFile);
 
         if (await Sharing.isAvailableAsync()) {
           await Sharing.shareAsync(newUri, {
