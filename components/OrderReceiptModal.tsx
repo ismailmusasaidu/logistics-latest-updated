@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
+import * as Print from 'expo-print';
 
 type Order = {
   id: string;
@@ -70,6 +71,210 @@ export function OrderReceiptModal({ visible, onClose, orderId }: ReceiptProps) {
     if (Platform.OS === 'web' && order) {
       generatePDF();
     }
+  };
+
+  const createHTMLReceipt = () => {
+    if (!order) return '';
+
+    return `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <style>
+            * {
+              margin: 0;
+              padding: 0;
+              box-sizing: border-box;
+            }
+            body {
+              font-family: 'Courier New', Courier, monospace;
+              padding: 40px;
+              font-size: 14px;
+              line-height: 1.6;
+            }
+            .header {
+              text-align: center;
+              margin-bottom: 30px;
+              border-bottom: 2px solid #000;
+              padding-bottom: 20px;
+            }
+            .company-name {
+              font-size: 24px;
+              font-weight: bold;
+              margin-bottom: 10px;
+            }
+            .company-info {
+              font-size: 12px;
+              color: #666;
+            }
+            .title {
+              text-align: center;
+              font-size: 18px;
+              font-weight: bold;
+              margin: 20px 0;
+              border-top: 2px solid #000;
+              border-bottom: 2px solid #000;
+              padding: 15px 0;
+            }
+            .section {
+              margin: 20px 0;
+              padding: 15px 0;
+              border-bottom: 1px solid #ddd;
+            }
+            .section-title {
+              font-weight: bold;
+              font-size: 16px;
+              margin-bottom: 10px;
+            }
+            .field {
+              margin: 8px 0;
+            }
+            .label {
+              font-weight: normal;
+              color: #666;
+            }
+            .value {
+              font-weight: bold;
+              margin-left: 5px;
+            }
+            .subsection {
+              margin: 15px 0;
+            }
+            .subsection-title {
+              font-weight: bold;
+              margin-bottom: 5px;
+            }
+            .fee-section {
+              margin: 30px 0;
+              padding: 20px;
+              background: #f5f5f5;
+              border: 2px solid #000;
+            }
+            .fee-label {
+              font-size: 18px;
+              font-weight: bold;
+            }
+            .fee-amount {
+              font-size: 24px;
+              font-weight: bold;
+              margin-top: 10px;
+            }
+            .footer {
+              text-align: center;
+              margin-top: 30px;
+              padding-top: 20px;
+              border-top: 2px solid #000;
+              font-size: 12px;
+              color: #666;
+            }
+            .order-id {
+              margin-top: 15px;
+              font-size: 10px;
+              color: #999;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <div class="company-name">DANHAUSA LOGISTICS</div>
+            <div class="company-info">info@danhausalogistics.com</div>
+            <div class="company-info">danhausalogistics.com</div>
+          </div>
+
+          <div class="title">ORDER RECEIPT</div>
+
+          <div class="section">
+            <div class="field">
+              <span class="label">Order Number:</span>
+              <span class="value">${order.order_number}</span>
+            </div>
+            <div class="field">
+              <span class="label">Date:</span>
+              <span class="value">${formatDate(order.created_at)}</span>
+            </div>
+            <div class="field">
+              <span class="label">Status:</span>
+              <span class="value">${order.status.toUpperCase()}</span>
+            </div>
+          </div>
+
+          <div class="section">
+            <div class="section-title">DELIVERY DETAILS</div>
+
+            <div class="subsection">
+              <div class="subsection-title">FROM:</div>
+              <div>${order.pickup_address}</div>
+              ${order.pickup_instructions ? `<div style="margin-top: 5px; font-size: 12px; color: #666;">Note: ${order.pickup_instructions}</div>` : ''}
+            </div>
+
+            <div class="subsection">
+              <div class="subsection-title">TO:</div>
+              <div>${order.delivery_address}</div>
+              ${order.delivery_instructions ? `<div style="margin-top: 5px; font-size: 12px; color: #666;">Note: ${order.delivery_instructions}</div>` : ''}
+            </div>
+
+            <div class="field">
+              <span class="label">Recipient:</span>
+              <span class="value">${order.recipient_name}</span>
+            </div>
+            <div class="field">
+              <span class="label">Phone:</span>
+              <span class="value">${order.recipient_phone}</span>
+            </div>
+            ${order.scheduled_delivery_time ? `
+            <div class="field">
+              <span class="label">Scheduled:</span>
+              <span class="value">${formatDate(order.scheduled_delivery_time)}</span>
+            </div>
+            ` : ''}
+          </div>
+
+          <div class="section">
+            <div class="section-title">PACKAGE INFO</div>
+            <div class="field">
+              <span class="label">Description:</span>
+              <span class="value">${order.package_description}</span>
+            </div>
+            ${order.order_size ? `
+            <div class="field">
+              <span class="label">Size:</span>
+              <span class="value">${order.order_size.toUpperCase()}</span>
+            </div>
+            ` : ''}
+            ${order.order_types && order.order_types.length > 0 ? `
+            <div class="field">
+              <span class="label">Type:</span>
+              <span class="value">${order.order_types.join(', ').toUpperCase()}</span>
+            </div>
+            ` : ''}
+          </div>
+
+          <div class="fee-section">
+            <div class="fee-label">DELIVERY FEE</div>
+            <div class="fee-amount">${formatCurrency(order.delivery_fee)}</div>
+          </div>
+
+          <div class="section">
+            <div class="field">
+              <span class="label">Payment Method:</span>
+              <span class="value">${order.payment_method.toUpperCase()}</span>
+            </div>
+            <div class="field">
+              <span class="label">Payment Status:</span>
+              <span class="value">${order.payment_status.toUpperCase()}</span>
+            </div>
+          </div>
+
+          <div class="footer">
+            <div>Thank you for using Danhausa Logistics!</div>
+            <div>Track your order anytime in the app</div>
+            <div class="order-id">Order ID: ${order.id}</div>
+          </div>
+        </body>
+      </html>
+    `;
   };
 
   const createPDFDocument = async () => {
@@ -347,19 +552,11 @@ Order ID: ${order.id}
           title: `Receipt - ${order.order_number}`,
         });
       } else {
-        const doc = await createPDFDocument();
-        if (!doc) return;
-
-        const pdfOutput = doc.output('datauristring');
-        const base64 = pdfOutput.split(',')[1];
-
-        const fileUri = `${FileSystem.cacheDirectory}receipt-${order.order_number}.pdf`;
-        await FileSystem.writeAsStringAsync(fileUri, base64, {
-          encoding: FileSystem.EncodingType.Base64,
-        });
+        const html = createHTMLReceipt();
+        const { uri } = await Print.printToFileAsync({ html });
 
         if (await Sharing.isAvailableAsync()) {
-          await Sharing.shareAsync(fileUri, {
+          await Sharing.shareAsync(uri, {
             mimeType: 'application/pdf',
             dialogTitle: `Receipt - ${order.order_number}`,
             UTI: 'com.adobe.pdf',
