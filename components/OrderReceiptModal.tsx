@@ -875,12 +875,10 @@ const styles = StyleSheet.create({
   },
   receipt: {
     width: '100%',
-    maxWidth: Platform.OS === 'web' ? 360 : undefined,
+    maxWidth: 360,
     backgroundColor: '#ffffff',
-    padding: Platform.OS === 'web' ? 24 : 20,
-    borderWidth: Platform.OS === 'web' ? 1 : 0,
-    borderColor: '#e5e7eb',
-    borderRadius: Platform.OS === 'web' ? 12 : 0,
+    padding: 20,
+    alignSelf: 'center',
   },
   businessName: {
     fontSize: 18,
