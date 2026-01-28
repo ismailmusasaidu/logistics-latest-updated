@@ -4,6 +4,7 @@ import { Fonts } from '@/constants/fonts';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import * as FileSystem from 'expo-file-system';
+import { copyAsync } from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
 import * as Print from 'expo-print';
 
@@ -358,9 +359,10 @@ Order ID: ${order.id}
         const { uri } = await Print.printToFileAsync({ html });
 
         const newUri = `${FileSystem.cacheDirectory}${filename}`;
-        const sourceFile = new FileSystem.File(uri);
-        const destFile = new FileSystem.File(newUri);
-        await sourceFile.copy(destFile);
+        await copyAsync({
+          from: uri,
+          to: newUri,
+        });
 
         if (await Sharing.isAvailableAsync()) {
           await Sharing.shareAsync(newUri, {
