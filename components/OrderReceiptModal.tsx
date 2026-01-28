@@ -89,90 +89,101 @@ export function OrderReceiptModal({ visible, onClose, orderId }: ReceiptProps) {
               box-sizing: border-box;
             }
             body {
-              font-family: 'Courier New', Courier, monospace;
-              padding: 40px;
-              font-size: 14px;
-              line-height: 1.6;
+              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+              padding: 24px;
+              font-size: 11px;
+              line-height: 1.4;
             }
             .header {
               text-align: center;
-              margin-bottom: 30px;
-              border-bottom: 2px solid #000;
-              padding-bottom: 20px;
+              margin-bottom: 16px;
+              border-bottom: 1px solid #e5e7eb;
+              padding-bottom: 12px;
             }
             .company-name {
-              font-size: 24px;
-              font-weight: bold;
-              margin-bottom: 10px;
+              font-size: 18px;
+              font-weight: 700;
+              margin-bottom: 4px;
+              letter-spacing: 0.5px;
             }
             .company-info {
-              font-size: 12px;
-              color: #666;
+              font-size: 10px;
+              color: #6b7280;
             }
             .title {
               text-align: center;
-              font-size: 18px;
-              font-weight: bold;
-              margin: 20px 0;
-              border-top: 2px solid #000;
-              border-bottom: 2px solid #000;
-              padding: 15px 0;
+              font-size: 14px;
+              font-weight: 700;
+              margin: 12px 0;
+              border-top: 1px solid #e5e7eb;
+              border-bottom: 1px solid #e5e7eb;
+              padding: 8px 0;
+              letter-spacing: 1px;
             }
             .section {
-              margin: 20px 0;
-              padding: 15px 0;
-              border-bottom: 1px solid #ddd;
+              margin: 12px 0;
+              padding: 8px 0;
+              border-bottom: 1px solid #e5e7eb;
             }
             .section-title {
-              font-weight: bold;
-              font-size: 16px;
-              margin-bottom: 10px;
+              font-weight: 700;
+              font-size: 11px;
+              margin-bottom: 6px;
+              letter-spacing: 0.3px;
             }
             .field {
-              margin: 8px 0;
+              margin: 4px 0;
             }
             .label {
               font-weight: normal;
-              color: #666;
+              color: #6b7280;
+              font-size: 10px;
             }
             .value {
-              font-weight: bold;
+              font-weight: 600;
               margin-left: 5px;
+              font-size: 10px;
             }
             .subsection {
-              margin: 15px 0;
+              margin: 8px 0;
             }
             .subsection-title {
-              font-weight: bold;
-              margin-bottom: 5px;
+              font-weight: 700;
+              margin-bottom: 3px;
+              font-size: 10px;
+              color: #6b7280;
+              letter-spacing: 0.3px;
             }
             .fee-section {
-              margin: 30px 0;
-              padding: 20px;
-              background: #f5f5f5;
-              border: 2px solid #000;
+              margin: 12px 0;
+              padding: 12px;
+              background: #fef3f2;
+              border: 1px solid #f97316;
+              border-radius: 8px;
             }
             .fee-label {
-              font-size: 18px;
-              font-weight: bold;
+              font-size: 12px;
+              font-weight: 700;
+              letter-spacing: 0.5px;
             }
             .fee-amount {
-              font-size: 24px;
-              font-weight: bold;
-              margin-top: 10px;
+              font-size: 18px;
+              font-weight: 700;
+              margin-top: 6px;
+              color: #f97316;
             }
             .footer {
               text-align: center;
-              margin-top: 30px;
-              padding-top: 20px;
-              border-top: 2px solid #000;
-              font-size: 12px;
-              color: #666;
+              margin-top: 16px;
+              padding-top: 12px;
+              border-top: 1px solid #e5e7eb;
+              font-size: 9px;
+              color: #6b7280;
             }
             .order-id {
-              margin-top: 15px;
-              font-size: 10px;
-              color: #999;
+              margin-top: 8px;
+              font-size: 8px;
+              color: #9ca3af;
             }
           </style>
         </head>
@@ -593,15 +604,15 @@ Order ID: ${order.id}
               box-sizing: border-box;
             }
             body {
-              font-family: 'Courier New', Courier, monospace;
-              padding: 20px;
+              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+              padding: 16px;
               background: white;
               color: #000;
-              font-size: 12px;
+              font-size: 11px;
               line-height: 1.4;
             }
             .receipt {
-              max-width: 320px;
+              max-width: 360px;
               margin: 0 auto;
               padding: 20px;
               border: 1px solid #e5e7eb;
@@ -610,75 +621,87 @@ Order ID: ${order.id}
               text-align: center;
             }
             .business-name {
-              font-size: 18px;
-              font-weight: bold;
-              margin-bottom: 4px;
+              font-size: 16px;
+              font-weight: 700;
+              margin-bottom: 2px;
+              letter-spacing: 0.5px;
             }
             .business-info {
-              font-size: 11px;
-              color: #666;
-              margin-bottom: 2px;
+              font-size: 10px;
+              color: #6b7280;
+              margin-bottom: 1px;
             }
             .divider {
-              border-top: 1px dashed #ccc;
-              margin: 12px 0;
+              border-top: 1px solid #e5e7eb;
+              margin: 8px 0;
             }
             .receipt-title {
-              font-size: 14px;
-              font-weight: bold;
-              margin: 12px 0;
+              font-size: 13px;
+              font-weight: 700;
+              margin: 8px 0;
+              letter-spacing: 1px;
             }
             .row {
               display: flex;
               justify-content: space-between;
-              margin-bottom: 6px;
+              margin-bottom: 4px;
+              align-items: flex-start;
             }
             .label {
-              color: #666;
+              color: #6b7280;
+              font-size: 10px;
             }
             .value {
-              font-weight: bold;
+              font-weight: 600;
               text-align: right;
+              font-size: 10px;
             }
             .section-title {
-              font-size: 12px;
-              font-weight: bold;
-              margin: 12px 0 8px 0;
+              font-size: 10px;
+              font-weight: 700;
+              margin: 8px 0 6px 0;
+              letter-spacing: 0.3px;
             }
             .address-section {
-              margin-bottom: 10px;
+              margin-bottom: 8px;
             }
             .address-label {
-              font-size: 10px;
-              font-weight: bold;
-              color: #666;
-              margin-bottom: 4px;
+              font-size: 9px;
+              font-weight: 700;
+              color: #6b7280;
+              margin-bottom: 3px;
+              letter-spacing: 0.3px;
             }
             .address-text {
-              font-size: 11px;
-              margin-bottom: 4px;
+              font-size: 10px;
+              margin-bottom: 3px;
             }
             .instructions {
-              font-size: 10px;
-              color: #666;
+              font-size: 9px;
+              color: #6b7280;
               font-style: italic;
-              margin-top: 4px;
+              margin-top: 3px;
             }
             .total-row {
               display: flex;
               justify-content: space-between;
-              padding: 8px 0;
-              font-size: 14px;
-              font-weight: bold;
+              padding: 6px 0;
+              font-size: 12px;
+              font-weight: 700;
+              letter-spacing: 0.5px;
+            }
+            .total-value {
+              font-size: 15px;
+              color: #f97316;
             }
             .footer-text {
-              font-size: 11px;
-              color: #666;
-              margin-bottom: 4px;
+              font-size: 9px;
+              color: #6b7280;
+              margin-bottom: 3px;
             }
             .footer-small {
-              font-size: 9px;
-              color: #999;
+              font-size: 8px;
+              color: #9ca3af;
             }
             @media print {
               body {
@@ -779,7 +802,7 @@ Order ID: ${order.id}
 
             <div class="total-row">
               <span>DELIVERY FEE:</span>
-              <span>${formatCurrency(order.delivery_fee)}</span>
+              <span class="total-value">${formatCurrency(order.delivery_fee)}</span>
             </div>
 
             <div class="divider"></div>
@@ -966,7 +989,7 @@ Order ID: ${order.id}
 
                   <View style={styles.divider} />
 
-                  <Text style={styles.footerText}>Thank you for using Swift Delivery!</Text>
+                  <Text style={styles.footerText}>Thank you for using Danhausa Logistics!</Text>
                   <Text style={styles.footerText}>Track your order anytime in the app</Text>
 
                   <View style={styles.divider} />
@@ -1073,60 +1096,64 @@ const styles = StyleSheet.create({
   },
   receipt: {
     width: '100%',
-    maxWidth: Platform.OS === 'web' ? 320 : undefined,
+    maxWidth: Platform.OS === 'web' ? 360 : undefined,
     backgroundColor: '#ffffff',
-    padding: Platform.OS === 'web' ? 20 : 16,
+    padding: Platform.OS === 'web' ? 24 : 20,
     borderWidth: Platform.OS === 'web' ? 1 : 0,
     borderColor: '#e5e7eb',
-    borderRadius: Platform.OS === 'web' ? 8 : 0,
+    borderRadius: Platform.OS === 'web' ? 12 : 0,
   },
   businessName: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: '700',
-    fontFamily: Fonts.bold,
+    fontFamily: Fonts.poppinsBold,
     textAlign: 'center',
     color: '#111827',
-    marginBottom: 4,
+    marginBottom: 2,
+    letterSpacing: 0.5,
   },
   businessInfo: {
-    fontSize: 12,
-    fontFamily: Fonts.regular,
+    fontSize: 11,
+    fontFamily: Fonts.poppinsRegular,
     textAlign: 'center',
     color: '#6b7280',
-    marginBottom: 2,
+    marginBottom: 1,
   },
   divider: {
     height: 1,
     backgroundColor: '#e5e7eb',
-    marginVertical: 12,
+    marginVertical: 8,
   },
   receiptTitle: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '700',
-    fontFamily: Fonts.bold,
+    fontFamily: Fonts.poppinsBold,
     textAlign: 'center',
     color: '#111827',
+    letterSpacing: 1,
   },
   sectionTitle: {
-    fontSize: 13,
+    fontSize: 11,
     fontWeight: '700',
-    fontFamily: Fonts.bold,
+    fontFamily: Fonts.poppinsBold,
     color: '#111827',
-    marginBottom: 8,
+    marginBottom: 6,
+    letterSpacing: 0.3,
   },
   infoRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 6,
+    marginBottom: 4,
+    alignItems: 'flex-start',
   },
   infoLabel: {
-    fontSize: 12,
-    fontFamily: Fonts.medium,
+    fontSize: 11,
+    fontFamily: Fonts.poppinsRegular,
     color: '#6b7280',
   },
   infoValue: {
-    fontSize: 12,
-    fontFamily: Fonts.semiBold,
+    fontSize: 11,
+    fontFamily: Fonts.poppinsSemiBold,
     color: '#111827',
     textAlign: 'right',
     flex: 1,
@@ -1136,78 +1163,80 @@ const styles = StyleSheet.create({
     color: '#f97316',
   },
   addressSection: {
-    marginBottom: 12,
+    marginBottom: 8,
   },
   addressLabel: {
-    fontSize: 11,
+    fontSize: 10,
     fontWeight: '700',
-    fontFamily: Fonts.bold,
+    fontFamily: Fonts.poppinsBold,
     color: '#6b7280',
-    marginBottom: 4,
+    marginBottom: 3,
+    letterSpacing: 0.3,
   },
   addressText: {
-    fontSize: 12,
-    fontFamily: Fonts.regular,
+    fontSize: 11,
+    fontFamily: Fonts.poppinsRegular,
     color: '#111827',
     lineHeight: 16,
   },
   instructionsText: {
-    fontSize: 11,
-    fontFamily: Fonts.regular,
+    fontSize: 10,
+    fontFamily: Fonts.poppinsRegular,
     color: '#6b7280',
     fontStyle: 'italic',
-    marginTop: 4,
+    marginTop: 3,
   },
   packageDesc: {
-    fontSize: 12,
-    fontFamily: Fonts.regular,
+    fontSize: 11,
+    fontFamily: Fonts.poppinsRegular,
     color: '#111827',
-    marginBottom: 8,
+    marginBottom: 6,
     lineHeight: 16,
   },
   priceRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 6,
+    marginBottom: 4,
   },
   priceLabel: {
-    fontSize: 13,
-    fontFamily: Fonts.medium,
+    fontSize: 11,
+    fontFamily: Fonts.poppinsRegular,
     color: '#111827',
   },
   priceValue: {
-    fontSize: 13,
-    fontFamily: Fonts.semiBold,
+    fontSize: 11,
+    fontFamily: Fonts.poppinsSemiBold,
     color: '#111827',
   },
   totalRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 8,
+    paddingVertical: 6,
   },
   totalLabel: {
-    fontSize: 16,
+    fontSize: 13,
     fontWeight: '700',
-    fontFamily: Fonts.bold,
+    fontFamily: Fonts.poppinsBold,
     color: '#111827',
+    letterSpacing: 0.5,
   },
   totalValue: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '700',
-    fontFamily: Fonts.bold,
+    fontFamily: Fonts.poppinsBold,
     color: '#f97316',
   },
   footerText: {
-    fontSize: 12,
-    fontFamily: Fonts.medium,
+    fontSize: 10,
+    fontFamily: Fonts.poppinsRegular,
     textAlign: 'center',
     color: '#6b7280',
-    marginBottom: 4,
+    marginBottom: 3,
   },
   footerSmall: {
-    fontSize: 10,
-    fontFamily: Fonts.regular,
+    fontSize: 9,
+    fontFamily: Fonts.poppinsRegular,
     textAlign: 'center',
     color: '#9ca3af',
   },
