@@ -193,6 +193,7 @@ export default function Auth() {
 
           // Complete rider signup using secure database function
           const { data: riderData, error: riderError } = await supabase.rpc('complete_rider_signup', {
+            p_user_id: authData.user.id,
             p_phone_number: phoneNumber || '',
             p_address: address || '',
             p_vehicle_type: vehicleType || 'bike',
