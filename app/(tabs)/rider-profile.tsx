@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Platform, TextInput, ActivityIndicator } from 'react-native';
-import { User, Mail, Bike, Star, LogOut, TrendingUp, Edit, Save, X, Phone, MessageSquare } from 'lucide-react-native';
+import { User, Mail, Bike, Star, LogOut, TrendingUp, Edit, Save, X, Phone, MessageSquare, Eye } from 'lucide-react-native';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase, Rider, Rating } from '@/lib/supabase';
 import { useRouter } from 'expo-router';
 import { Fonts } from '@/constants/fonts';
+import RatingsListModal from '@/components/RatingsListModal';
 
 type RatingWithCustomer = Rating & {
   profiles: {
@@ -17,6 +18,7 @@ export default function RiderProfile() {
   const [riderData, setRiderData] = useState<Rider | null>(null);
   const [ratings, setRatings] = useState<RatingWithCustomer[]>([]);
   const [loadingRatings, setLoadingRatings] = useState(true);
+  const [ratingsModalVisible, setRatingsModalVisible] = useState(false);
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -346,7 +348,7 @@ export default function RiderProfile() {
               </View>
             </View>
 
-            {ratings.map((rating) => (
+            {ratings.slice(0, 3).map((rating) => (
               <View key={rating.id} style={styles.ratingCard}>
                 <View style={styles.ratingHeader}>
                   <View style={styles.ratingStars}>
@@ -380,6 +382,18 @@ export default function RiderProfile() {
                 )}
               </View>
             ))}
+
+            {ratings.length > 3 && (
+              <TouchableOpacity
+                style={styles.viewAllButton}
+                onPress={() => setRatingsModalVisible(true)}
+              >
+                <Eye size={18} color="#f97316" />
+                <Text style={styles.viewAllButtonText}>
+                  View All {ratings.length} Ratings
+                </Text>
+              </TouchableOpacity>
+            )}
           </View>
         )}
       </View>
@@ -390,6 +404,13 @@ export default function RiderProfile() {
           <Text style={styles.signOutText}>Sign Out</Text>
         </TouchableOpacity>
       </View>
+
+      <RatingsListModal
+        visible={ratingsModalVisible}
+        onClose={() => setRatingsModalVisible(false)}
+        ratings={ratings}
+        averageRating={riderData?.rating || 0}
+      />
     </ScrollView>
   );
 }
@@ -761,5 +782,23 @@ const styles = StyleSheet.create({
     fontFamily: Fonts.poppinsRegular,
     color: '#6b7280',
     lineHeight: 20,
+  },
+  viewAllButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    backgroundColor: '#fff7ed',
+    paddingVertical: 14,
+    paddingHorizontal: 20,
+    borderRadius: 12,
+    marginTop: 12,
+    borderWidth: 1,
+    borderColor: '#fed7aa',
+  },
+  viewAllButtonText: {
+    fontSize: 15,
+    fontFamily: Fonts.poppinsSemiBold,
+    color: '#f97316',
   },
 });
