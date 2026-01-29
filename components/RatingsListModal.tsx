@@ -114,16 +114,15 @@ const styles = StyleSheet.create({
   overlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
+    justifyContent: 'flex-end',
   },
   container: {
     backgroundColor: '#FFF',
-    borderRadius: 16,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
     width: '100%',
     maxWidth: 600,
-    maxHeight: '85%',
+    height: '90%',
     overflow: 'hidden',
   },
   header: {
