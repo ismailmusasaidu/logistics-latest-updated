@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, RefreshControl, Modal, TextInput, Platform, Linking, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Package, MapPin, Clock, Plus, X, User, Phone, ChevronDown, ChevronUp, Layers, Navigation, Search, Tag, Receipt } from 'lucide-react-native';
+import { Package, MapPin, Clock, Plus, X, User, Phone, ChevronDown, ChevronUp, Layers, Navigation, Search, Tag, Receipt, Star } from 'lucide-react-native';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase, Order, OrderTracking } from '@/lib/supabase';
 import BulkOrderModal from '@/components/BulkOrderModal';
@@ -9,6 +9,7 @@ import { CheckoutModal } from '@/components/CheckoutModal';
 import { PricingBreakdown } from '@/components/PricingBreakdown';
 import { Toast } from '@/components/Toast';
 import { OrderReceiptModal } from '@/components/OrderReceiptModal';
+import RatingModal from '@/components/RatingModal';
 import { pricingCalculator, PricingBreakdown as PricingBreakdownType, Promotion } from '@/lib/pricingCalculator';
 import { calculateDistanceBetweenAddresses } from '@/lib/geocoding';
 import { PaymentMethod, walletService } from '@/lib/wallet';
@@ -61,6 +62,9 @@ export default function CustomerHome() {
   const [searchQuery, setSearchQuery] = useState('');
   const [receiptModalVisible, setReceiptModalVisible] = useState(false);
   const [selectedOrderForReceipt, setSelectedOrderForReceipt] = useState<string | null>(null);
+  const [ratingModalVisible, setRatingModalVisible] = useState(false);
+  const [selectedOrderForRating, setSelectedOrderForRating] = useState<Order | null>(null);
+  const [ratedOrders, setRatedOrders] = useState<Set<string>>(new Set());
 
   const orderTypeOptions = ['Groceries', 'Medicine', 'Bulk / Heavy Items', 'Express Delivery'];
 
@@ -177,6 +181,17 @@ export default function CustomerHome() {
             trackingByOrder[tracking.order_id].push(tracking);
           });
           setOrderTracking(trackingByOrder);
+        }
+
+        const { data: ratingsData } = await supabase
+          .from('ratings')
+          .select('order_id')
+          .eq('customer_id', profile?.id)
+          .in('order_id', orderIds);
+
+        if (ratingsData) {
+          const ratedOrderIds = new Set(ratingsData.map(r => r.order_id));
+          setRatedOrders(ratedOrderIds);
         }
       }
     } catch (error) {
@@ -422,8 +437,8 @@ export default function CustomerHome() {
       loadOrders();
       setPendingPaymentData(null);
 
-      if (insertedOrder?.id) {
-        assignRiderToOrder(insertedOrder.id);
+      if (orderData?.id) {
+        assignRiderToOrder(orderData.id);
       }
 
       return true;
@@ -636,6 +651,23 @@ export default function CustomerHome() {
   const handleCloseReceipt = () => {
     setReceiptModalVisible(false);
     setSelectedOrderForReceipt(null);
+  };
+
+  const handleOpenRating = (order: Order) => {
+    setSelectedOrderForRating(order);
+    setRatingModalVisible(true);
+  };
+
+  const handleCloseRating = () => {
+    setRatingModalVisible(false);
+    setSelectedOrderForRating(null);
+  };
+
+  const handleRatingSuccess = () => {
+    if (selectedOrderForRating) {
+      setRatedOrders(prev => new Set(prev).add(selectedOrderForRating.id));
+    }
+    showToast('Rating submitted successfully!', 'success');
   };
 
   const formatTrackingTime = (dateString: string) => {
@@ -1130,12 +1162,28 @@ export default function CustomerHome() {
                       </View>
                     )}
 
-                    <TouchableOpacity
-                      style={styles.receiptButton}
-                      onPress={() => handleViewReceipt(order.id)}>
-                      <Receipt size={16} color="#f97316" />
-                      <Text style={styles.receiptButtonText}>View Receipt</Text>
-                    </TouchableOpacity>
+                    <View style={styles.historyActions}>
+                      <TouchableOpacity
+                        style={styles.receiptButton}
+                        onPress={() => handleViewReceipt(order.id)}>
+                        <Receipt size={16} color="#f97316" />
+                        <Text style={styles.receiptButtonText}>View Receipt</Text>
+                      </TouchableOpacity>
+                      {order.status === 'delivered' && order.rider_id && !ratedOrders.has(order.id) && (
+                        <TouchableOpacity
+                          style={styles.ratingButton}
+                          onPress={() => handleOpenRating(order)}>
+                          <Star size={16} color="#FFD700" />
+                          <Text style={styles.ratingButtonText}>Rate Delivery</Text>
+                        </TouchableOpacity>
+                      )}
+                      {order.status === 'delivered' && ratedOrders.has(order.id) && (
+                        <View style={styles.ratedBadge}>
+                          <Star size={14} color="#10b981" fill="#10b981" />
+                          <Text style={styles.ratedText}>Rated</Text>
+                        </View>
+                      )}
+                    </View>
                   </View>
                     ))}
                   </>
@@ -1396,6 +1444,18 @@ export default function CustomerHome() {
         onClose={handleCloseReceipt}
         orderId={selectedOrderForReceipt || ''}
       />
+
+      {selectedOrderForRating && (
+        <RatingModal
+          visible={ratingModalVisible}
+          onClose={handleCloseRating}
+          orderId={selectedOrderForRating.id}
+          riderId={selectedOrderForRating.rider_id || ''}
+          customerId={profile?.id || ''}
+          riderName={selectedOrderForRating.rider_name || 'Your Rider'}
+          onSuccess={handleRatingSuccess}
+        />
+      )}
     </SafeAreaView>
   );
 }
@@ -2145,5 +2205,46 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     fontFamily: Fonts.poppinsSemiBold,
     color: '#f97316',
+  },
+  historyActions: {
+    flexDirection: 'row',
+    gap: 8,
+    marginTop: 12,
+  },
+  ratingButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    backgroundColor: '#fffbeb',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#fde68a',
+    flex: 1,
+  },
+  ratingButtonText: {
+    fontSize: 14,
+    fontWeight: '600',
+    fontFamily: Fonts.poppinsSemiBold,
+    color: '#f59e0b',
+  },
+  ratedBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    backgroundColor: '#d1fae5',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 12,
+    flex: 1,
+  },
+  ratedText: {
+    fontSize: 13,
+    fontWeight: '600',
+    fontFamily: Fonts.poppinsSemiBold,
+    color: '#10b981',
   },
 });

@@ -1,14 +1,22 @@
 import { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Platform, TextInput, ActivityIndicator } from 'react-native';
-import { User, Mail, Bike, Star, LogOut, TrendingUp, Edit, Save, X, Phone } from 'lucide-react-native';
+import { User, Mail, Bike, Star, LogOut, TrendingUp, Edit, Save, X, Phone, MessageSquare } from 'lucide-react-native';
 import { useAuth } from '@/contexts/AuthContext';
-import { supabase, Rider } from '@/lib/supabase';
+import { supabase, Rider, Rating } from '@/lib/supabase';
 import { useRouter } from 'expo-router';
 import { Fonts } from '@/constants/fonts';
+
+type RatingWithCustomer = Rating & {
+  profiles: {
+    full_name: string;
+  };
+};
 
 export default function RiderProfile() {
   const { profile, signOut, refreshProfile } = useAuth();
   const [riderData, setRiderData] = useState<Rider | null>(null);
+  const [ratings, setRatings] = useState<RatingWithCustomer[]>([]);
+  const [loadingRatings, setLoadingRatings] = useState(true);
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -19,6 +27,7 @@ export default function RiderProfile() {
 
   useEffect(() => {
     loadRiderData();
+    loadRatings();
   }, []);
 
   const loadRiderData = async () => {
@@ -33,6 +42,40 @@ export default function RiderProfile() {
       setRiderData(data);
     } catch (error) {
       console.error('Error loading rider data:', error);
+    }
+  };
+
+  const loadRatings = async () => {
+    try {
+      setLoadingRatings(true);
+
+      const { data: riderInfo, error: riderError } = await supabase
+        .from('riders')
+        .select('id')
+        .eq('user_id', profile?.id)
+        .maybeSingle();
+
+      if (riderError) throw riderError;
+      if (!riderInfo) return;
+
+      const { data, error } = await supabase
+        .from('ratings')
+        .select(`
+          *,
+          profiles:customer_id (
+            full_name
+          )
+        `)
+        .eq('rider_id', riderInfo.id)
+        .order('created_at', { ascending: false })
+        .limit(20);
+
+      if (error) throw error;
+      setRatings(data as RatingWithCustomer[] || []);
+    } catch (error) {
+      console.error('Error loading ratings:', error);
+    } finally {
+      setLoadingRatings(false);
     }
   };
 
@@ -264,6 +307,82 @@ export default function RiderProfile() {
           </View>
         </View>
       )}
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>My Ratings</Text>
+
+        {loadingRatings ? (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="#f97316" />
+          </View>
+        ) : ratings.length === 0 ? (
+          <View style={styles.emptyRatings}>
+            <Star size={48} color="#d1d5db" />
+            <Text style={styles.emptyRatingsText}>No ratings yet</Text>
+            <Text style={styles.emptyRatingsSubtext}>
+              Complete deliveries to receive customer feedback
+            </Text>
+          </View>
+        ) : (
+          <View style={styles.ratingsContainer}>
+            <View style={styles.ratingsSummary}>
+              <View style={styles.averageRatingCard}>
+                <Text style={styles.averageRatingNumber}>
+                  {riderData?.rating.toFixed(1) || '0.0'}
+                </Text>
+                <View style={styles.starsRow}>
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <Star
+                      key={star}
+                      size={16}
+                      color="#fbbf24"
+                      fill={star <= Math.round(riderData?.rating || 0) ? '#fbbf24' : 'transparent'}
+                    />
+                  ))}
+                </View>
+                <Text style={styles.ratingsCount}>
+                  Based on {ratings.length} {ratings.length === 1 ? 'rating' : 'ratings'}
+                </Text>
+              </View>
+            </View>
+
+            {ratings.map((rating) => (
+              <View key={rating.id} style={styles.ratingCard}>
+                <View style={styles.ratingHeader}>
+                  <View style={styles.ratingStars}>
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <Star
+                        key={star}
+                        size={14}
+                        color="#fbbf24"
+                        fill={star <= rating.rating ? '#fbbf24' : 'transparent'}
+                      />
+                    ))}
+                  </View>
+                  <Text style={styles.ratingDate}>
+                    {new Date(rating.created_at).toLocaleDateString('en-US', {
+                      month: 'short',
+                      day: 'numeric',
+                      year: 'numeric',
+                    })}
+                  </Text>
+                </View>
+
+                <Text style={styles.ratingCustomer}>
+                  {rating.profiles?.full_name || 'Anonymous Customer'}
+                </Text>
+
+                {rating.comment && (
+                  <View style={styles.commentContainer}>
+                    <MessageSquare size={14} color="#6b7280" />
+                    <Text style={styles.ratingComment}>{rating.comment}</Text>
+                  </View>
+                )}
+              </View>
+            ))}
+          </View>
+        )}
+      </View>
 
       <View  style={styles.section}>
         <TouchableOpacity style={styles.signOutButton} onPress={handleSignOut}>
@@ -538,5 +657,109 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: Fonts.poppinsBold,
     color: '#ffffff',
+  },
+  loadingContainer: {
+    paddingVertical: 40,
+    alignItems: 'center',
+  },
+  emptyRatings: {
+    backgroundColor: '#ffffff',
+    borderRadius: 16,
+    padding: 40,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  emptyRatingsText: {
+    fontSize: 16,
+    fontFamily: Fonts.poppinsSemiBold,
+    color: '#6b7280',
+    marginTop: 16,
+  },
+  emptyRatingsSubtext: {
+    fontSize: 14,
+    fontFamily: Fonts.poppinsRegular,
+    color: '#9ca3af',
+    marginTop: 8,
+    textAlign: 'center',
+  },
+  ratingsContainer: {
+    gap: 12,
+  },
+  ratingsSummary: {
+    marginBottom: 8,
+  },
+  averageRatingCard: {
+    backgroundColor: '#fffbeb',
+    borderRadius: 16,
+    padding: 20,
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: '#fef3c7',
+  },
+  averageRatingNumber: {
+    fontSize: 48,
+    fontFamily: Fonts.poppinsBold,
+    color: '#f59e0b',
+    marginBottom: 8,
+  },
+  starsRow: {
+    flexDirection: 'row',
+    gap: 4,
+    marginBottom: 8,
+  },
+  ratingsCount: {
+    fontSize: 14,
+    fontFamily: Fonts.poppinsRegular,
+    color: '#6b7280',
+  },
+  ratingCard: {
+    backgroundColor: '#ffffff',
+    borderRadius: 12,
+    padding: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  ratingHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  ratingStars: {
+    flexDirection: 'row',
+    gap: 2,
+  },
+  ratingDate: {
+    fontSize: 12,
+    fontFamily: Fonts.poppinsRegular,
+    color: '#9ca3af',
+  },
+  ratingCustomer: {
+    fontSize: 14,
+    fontFamily: Fonts.poppinsSemiBold,
+    color: '#374151',
+    marginBottom: 8,
+  },
+  commentContainer: {
+    flexDirection: 'row',
+    gap: 8,
+    backgroundColor: '#f9fafb',
+    padding: 12,
+    borderRadius: 8,
+    marginTop: 4,
+  },
+  ratingComment: {
+    flex: 1,
+    fontSize: 14,
+    fontFamily: Fonts.poppinsRegular,
+    color: '#6b7280',
+    lineHeight: 20,
   },
 });
