@@ -895,7 +895,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: '700',
-    fontFamily: Fonts.bold,
+    fontFamily: Fonts.poppinsBold,
     color: '#111827',
   },
   errorContainer: {
@@ -907,7 +907,7 @@ const styles = StyleSheet.create({
   },
   errorText: {
     fontSize: 14,
-    fontFamily: Fonts.medium,
+    fontFamily: Fonts.poppinsMedium,
     color: '#ef4444',
     fontWeight: '500',
   },
@@ -922,7 +922,7 @@ const styles = StyleSheet.create({
   summaryTitle: {
     fontSize: 16,
     fontWeight: '700',
-    fontFamily: Fonts.bold,
+    fontFamily: Fonts.poppinsBold,
     color: '#111827',
     marginBottom: 12,
   },
@@ -933,13 +933,13 @@ const styles = StyleSheet.create({
   },
   summaryLabel: {
     fontSize: 14,
-    fontFamily: Fonts.medium,
+    fontFamily: Fonts.poppinsMedium,
     color: '#6b7280',
     fontWeight: '500',
   },
   summaryValue: {
     fontSize: 14,
-    fontFamily: Fonts.semiBold,
+    fontFamily: Fonts.poppinsSemiBold,
     color: '#111827',
     fontWeight: '600',
   },
@@ -954,13 +954,13 @@ const styles = StyleSheet.create({
   },
   totalLabel: {
     fontSize: 16,
-    fontFamily: Fonts.bold,
+    fontFamily: Fonts.poppinsBold,
     color: '#111827',
     fontWeight: '700',
   },
   totalValue: {
     fontSize: 18,
-    fontFamily: Fonts.bold,
+    fontFamily: Fonts.poppinsBold,
     color: '#f97316',
     fontWeight: '700',
   },
@@ -987,7 +987,7 @@ const styles = StyleSheet.create({
   deliveryTitle: {
     fontSize: 16,
     fontWeight: '700',
-    fontFamily: Fonts.bold,
+    fontFamily: Fonts.poppinsBold,
     color: '#111827',
   },
   removeButton: {
@@ -999,7 +999,7 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     fontWeight: '600',
-    fontFamily: Fonts.semiBold,
+    fontFamily: Fonts.poppinsSemiBold,
     color: '#374151',
     marginBottom: 8,
   },
@@ -1017,7 +1017,7 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     fontSize: 16,
-    fontFamily: Fonts.regular,
+    fontFamily: Fonts.poppinsRegular,
     color: '#111827',
     minHeight: 40,
   },
@@ -1028,7 +1028,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 12,
     fontSize: 16,
-    fontFamily: Fonts.regular,
+    fontFamily: Fonts.poppinsRegular,
     color: '#111827',
   },
   textArea: {
@@ -1050,7 +1050,7 @@ const styles = StyleSheet.create({
   addButtonText: {
     fontSize: 16,
     fontWeight: '600',
-    fontFamily: Fonts.semiBold,
+    fontFamily: Fonts.poppinsSemiBold,
     color: '#f97316',
   },
   footer: {
@@ -1070,7 +1070,7 @@ const styles = StyleSheet.create({
   cancelButtonText: {
     fontSize: 16,
     fontWeight: '600',
-    fontFamily: Fonts.semiBold,
+    fontFamily: Fonts.poppinsSemiBold,
     color: '#374151',
   },
   submitButton: {
@@ -1086,7 +1086,7 @@ const styles = StyleSheet.create({
   submitButtonText: {
     fontSize: 16,
     fontWeight: '600',
-    fontFamily: Fonts.semiBold,
+    fontFamily: Fonts.poppinsSemiBold,
     color: '#ffffff',
   },
   distanceCard: {
@@ -1106,7 +1106,7 @@ const styles = StyleSheet.create({
   distanceTitle: {
     fontSize: 13,
     fontWeight: '600',
-    fontFamily: Fonts.semiBold,
+    fontFamily: Fonts.poppinsSemiBold,
     color: '#f97316',
   },
   calculatingContainer: {
@@ -1116,7 +1116,7 @@ const styles = StyleSheet.create({
   },
   calculatingText: {
     fontSize: 13,
-    fontFamily: Fonts.regular,
+    fontFamily: Fonts.poppinsRegular,
     color: '#6b7280',
   },
   distanceError: {
@@ -1126,7 +1126,7 @@ const styles = StyleSheet.create({
   },
   distanceErrorText: {
     fontSize: 12,
-    fontFamily: Fonts.regular,
+    fontFamily: Fonts.poppinsRegular,
     color: '#dc2626',
   },
   distanceValues: {
@@ -1139,19 +1139,19 @@ const styles = StyleSheet.create({
   },
   distanceLabel: {
     fontSize: 13,
-    fontFamily: Fonts.medium,
+    fontFamily: Fonts.poppinsMedium,
     color: '#6b7280',
     fontWeight: '500',
   },
   distanceValue: {
     fontSize: 14,
-    fontFamily: Fonts.semiBold,
+    fontFamily: Fonts.poppinsSemiBold,
     color: '#111827',
     fontWeight: '600',
   },
   priceValue: {
     fontSize: 16,
-    fontFamily: Fonts.bold,
+    fontFamily: Fonts.poppinsBold,
     color: '#f97316',
     fontWeight: '700',
   },
@@ -1175,7 +1175,7 @@ const styles = StyleSheet.create({
   orderTypeChipText: {
     fontSize: 13,
     fontWeight: '600',
-    fontFamily: Fonts.semiBold,
+    fontFamily: Fonts.poppinsSemiBold,
     color: '#6b7280',
   },
   orderTypeChipTextActive: {
@@ -1201,7 +1201,7 @@ const styles = StyleSheet.create({
   promoInput: {
     flex: 1,
     fontSize: 16,
-    fontFamily: Fonts.regular,
+    fontFamily: Fonts.poppinsRegular,
     color: '#111827',
     minHeight: 40,
   },
@@ -1221,7 +1221,7 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontSize: 14,
     fontWeight: '600',
-    fontFamily: Fonts.semiBold,
+    fontFamily: Fonts.poppinsSemiBold,
   },
   promoApplied: {
     flexDirection: 'row',
@@ -1241,12 +1241,12 @@ const styles = StyleSheet.create({
   promoAppliedCode: {
     fontSize: 14,
     fontWeight: '700',
-    fontFamily: Fonts.bold,
+    fontFamily: Fonts.poppinsBold,
     color: '#f97316',
   },
   promoAppliedDesc: {
     fontSize: 12,
-    fontFamily: Fonts.regular,
+    fontFamily: Fonts.poppinsRegular,
     color: '#6b7280',
     marginTop: 2,
   },
@@ -1255,7 +1255,7 @@ const styles = StyleSheet.create({
   },
   promoErrorText: {
     fontSize: 13,
-    fontFamily: Fonts.medium,
+    fontFamily: Fonts.poppinsMedium,
     color: '#ef4444',
     fontWeight: '500',
     marginTop: 6,
@@ -1285,7 +1285,7 @@ const styles = StyleSheet.create({
   timeToggleButtonText: {
     fontSize: 14,
     fontWeight: '600',
-    fontFamily: Fonts.semiBold,
+    fontFamily: Fonts.poppinsSemiBold,
     color: '#6b7280',
   },
   timeToggleButtonTextActive: {
@@ -1303,7 +1303,7 @@ const styles = StyleSheet.create({
   schedulingLabel: {
     fontSize: 13,
     fontWeight: '600',
-    fontFamily: Fonts.semiBold,
+    fontFamily: Fonts.poppinsSemiBold,
     color: '#111827',
   },
 });
